@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { saveExpense as saveExpenseAction } from '../redux/reducers/wallet';
+import { fetchExchangeRate } from '../redux/actions';
 
 class WalletForm extends Component {
   constructor() {
@@ -14,6 +16,33 @@ class WalletForm extends Component {
       tag: 'Alimentação',
     };
   }
+
+  handleAddExpense = async () => {
+    const { value, description, currency, method, tag } = this.state;
+    const { expenses, saveExpense } = this.props;
+
+    try {
+      const exchangeRate = await fetchExchangeRate(currency);
+
+      const expense = {
+        id: expenses.length,
+        value,
+        description,
+        currency,
+        method,
+        tag,
+        exchangeRate,
+      };
+
+      saveExpense(expense);
+    } catch (error) {
+      console.error(error);
+    }
+    this.setState({
+      value: '',
+      description: '',
+    });
+  };
 
   render() {
     const { value, description, currency, method, tag } = this.state;
@@ -64,6 +93,12 @@ class WalletForm extends Component {
           <option value="Transporte">Transporte</option>
           <option value="Saúde">Saúde</option>
         </select>
+        <button
+          type="button"
+          onClick={ () => this.handleAddExpense() }
+        >
+          Adicionar despesa
+        </button>
       </form>
     );
   }
@@ -71,10 +106,26 @@ class WalletForm extends Component {
 
 const mapStateToProps = (state) => ({
   currencies: state.wallet && state.wallet.currencies ? state.wallet.currencies : [],
+  expenses: state.wallet && state.wallet.expenses ? state.wallet.expenses : [],
 });
+
+const mapDispatchToProps = {
+  saveExpense: saveExpenseAction,
+};
 
 WalletForm.propTypes = {
   currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  saveExpense: PropTypes.func.isRequired,
+  expenses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      value: PropTypes.string,
+      description: PropTypes.string,
+      currency: PropTypes.string,
+      method: PropTypes.string,
+      tag: PropTypes.string,
+    }),
+  ).isRequired,
 };
 
-export default connect(mapStateToProps)(WalletForm);
+export default connect(mapStateToProps, mapDispatchToProps)(WalletForm);
