@@ -13,14 +13,14 @@ class Wallet extends React.Component {
   }
 
   render() {
-    const { expenses } = this.props;
+    // const { expenses } = this.props;
 
     return (
       <div>
         TrybeWallet
         <Header />
         <WalletForm />
-        <Table expenses={ expenses } />
+        <Table />
       </div>
     );
   }
@@ -28,23 +28,23 @@ class Wallet extends React.Component {
 
 Wallet.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  expenses: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      value: PropTypes.string,
-      description: PropTypes.string,
-      currency: PropTypes.string,
-      method: PropTypes.string,
-      tag: PropTypes.string,
-      exchangeRate: PropTypes.objectOf(
-        PropTypes.shape({
-          code: PropTypes.string,
-          name: PropTypes.string,
-          ask: PropTypes.string,
-        }),
-      ),
-    }),
-  ).isRequired,
+  // expenses: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     id: PropTypes.number,
+  //     value: PropTypes.string,
+  //     description: PropTypes.string,
+  //     currency: PropTypes.string,
+  //     method: PropTypes.string,
+  //     tag: PropTypes.string,
+  //     exchangeRate: PropTypes.objectOf(
+  //       PropTypes.shape({
+  //         code: PropTypes.string,
+  //         name: PropTypes.string,
+  //         ask: PropTypes.string,
+  //       }),
+  //     ),
+  //   }),
+  // ).isRequired,
 };
 
 const mapStateToProps = (state) => ({

@@ -1,8 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { deleteAction } from '../redux/actions';
 
 class Table extends Component {
+  handleClickDeleteButton = (id) => {
+    const { dispatch } = this.props;
+    dispatch(deleteAction(id));
+  };
+
+  getCurrencyName = (currencyCode) => {
+    const currencyNames = {
+      USD: 'Dólar Americano',
+      EUR: 'Euro',
+    };
+
+    return currencyNames[currencyCode] || currencyCode;
+  };
+
   render() {
     const { expenses } = this.props;
     return (
@@ -21,21 +36,31 @@ class Table extends Component {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense) => {
-            const exchangeRate = expense.exchangeRate?.[expense.currency]?.ask ?? 0;
-            const convertedValue = (parseFloat(expense.value) * exchangeRate).toFixed(2);
-
+          {expenses.map((exp) => {
+            const convertedValue = (
+              Number(exp.exchangeRates[exp.currency].ask) * Number(exp.value)
+            ).toFixed(2);
             return (
-              <tr key={ expense.id }>
-                <td>{expense.description}</td>
-                <td>{expense.tag}</td>
-                <td>{expense.method}</td>
-                <td>{expense.value}</td>
-                <td>{expense.currency}</td>
-                <td>{exchangeRate}</td>
+              <tr key={ exp.id }>
+                <td>{exp.description}</td>
+                <td>{exp.tag}</td>
+                <td>{exp.method}</td>
+                <td>{Number(exp.value).toFixed(2)}</td>
+                <td>{`${this.getCurrencyName(exp.currency)}/Real Brasileiro`}</td>
+                <td>{Number(exp.exchangeRates[exp.currency].ask).toFixed(2)}</td>
                 <td>{convertedValue}</td>
                 <td>Real</td>
-                <td>Editar/Excluir</td>
+                <td>
+                  <button
+                    data-testid="delete-btn"
+                    onClick={ () => this.handleClickDeleteButton(exp.id) }
+                  >
+                    Deletar
+                  </button>
+                  <button>
+                    Editar
+                  </button>
+                </td>
               </tr>
             );
           })}
@@ -56,13 +81,13 @@ Table.propTypes = {
       tag: PropTypes.string,
       exchangeRate: PropTypes.objectOf(
         PropTypes.shape({
-          code: PropTypes.string,
           name: PropTypes.string,
           ask: PropTypes.string,
         }),
       ),
     }),
   ).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (globalState) => ({

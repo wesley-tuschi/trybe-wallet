@@ -1,6 +1,7 @@
 export const SAVE_EMAIL = 'SAVE_EMAIL';
 export const FETCH_API_SUCCESS = 'FETCH_API_SUCCESS';
 export const SAVE_EXPENSES = 'SAVE_EXPENSES';
+export const DELETE_EXPENSE = 'DELETE_EXPENSE';
 
 // Salva o email
 export const saveEmail = (email) => ({
@@ -44,6 +45,23 @@ export const actionAddExpenses = (data) => async (dispatch, getState) => {
 
   dispatch({
     type: SAVE_EXPENSES,
+    payload: {
+      expenses,
+    },
+  });
+};
+
+export const deleteAction = (id) => (dispatch, getState) => {
+  const globalState = getState();
+
+  const expenses = [...globalState.wallet.expenses];
+
+  const expenseIndex = expenses.findIndex((exp) => exp.id === id);
+
+  expenses.splice(expenseIndex, 1);
+
+  dispatch({
+    type: DELETE_EXPENSE,
     payload: {
       expenses,
     },
