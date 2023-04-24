@@ -1,31 +1,26 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
-import { FETCH_API_SUCCESS } from '../actions';
-
-export const SAVE_EXPENSE = 'SAVE_EXPENSE';
-
-export const saveExpense = (expense) => ({
-  type: SAVE_EXPENSE,
-  payload: expense,
-});
+import { FETCH_API_SUCCESS, SAVE_EXPENSES } from '../actions';
 
 const INITIAL_STATE = {
   currencies: [],
   expenses: [],
+  editor: false,
+  idToEdit: 0,
+  expenseToEdit: {},
 };
 
 const wallet = (state = INITIAL_STATE, action) => {
+  const newState = {
+    ...state,
+    ...action.payload,
+  };
+
   switch (action.type) {
   case FETCH_API_SUCCESS:
-    return {
-      ...state,
-      currencies: action.payload.currencies,
-    };
-  case SAVE_EXPENSE:
+    return newState;
+  case SAVE_EXPENSES:
     console.log('Save expense action:', action);
-    return {
-      ...state,
-      expenses: [...state.expenses, action.payload],
-    };
+    return newState;
   default:
     return state;
   }
